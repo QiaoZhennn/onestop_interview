@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, Loader2, CheckCircle } from 'lucide-react';
+import { useState } from 'react';
+import { Upload, FileText, Loader2, CheckCircle, Type, Image } from 'lucide-react';
 import { ProfileSummary } from '@/types';
 
 interface ResumeUploadProps {
@@ -10,28 +9,52 @@ interface ResumeUploadProps {
   existingProfile?: ProfileSummary | null;
 }
 
+type InputMode = 'screenshot' | 'text';
+
 export default function ResumeUpload({ onProfileParsed, existingProfile }: ResumeUploadProps) {
+  const [mode, setMode] = useState<InputMode>('text');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [fileName, setFileName] = useState('');
   const [profile, setProfile] = useState<ProfileSummary | null>(existingProfile || null);
+  const [textInput, setTextInput] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (!file) return;
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
 
-    setFileName(file.name);
+  const handleSubmit = async () => {
     setLoading(true);
     setError('');
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
+      let res: Response;
 
-      const res = await fetch('/api/parse-resume', {
-        method: 'POST',
-        body: formData,
-      });
+      if (mode === 'screenshot') {
+        if (!selectedFile) {
+          throw new Error('Please select a resume screenshot');
+        }
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        res = await fetch('/api/parse-resume', {
+          method: 'POST',
+          body: formData,
+        });
+      } else {
+        if (!textInput.trim()) {
+          throw new Error('Please describe your background');
+        }
+        res = await fetch('/api/parse-resume', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: textInput.trim() }),
+        });
+      }
 
       if (!res.ok) {
         const data = await res.json();
@@ -47,60 +70,99 @@ export default function ResumeUpload({ onProfileParsed, existingProfile }: Resum
     } finally {
       setLoading(false);
     }
-  }, [onProfileParsed]);
+  };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'application/pdf': ['.pdf'],
-      'text/plain': ['.txt'],
-      'application/msword': ['.doc'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-    },
-    maxFiles: 1,
-    disabled: loading,
-  });
+  const tabs: { mode: InputMode; label: string; icon: React.ReactNode }[] = [
+    { mode: 'text', label: 'Describe Yourself', icon: <Type size={14} /> },
+    { mode: 'screenshot', label: 'Upload Screenshot', icon: <Image size={14} /> },
+  ];
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-2">
         <span className="text-coder-brown text-xs font-bold">Step 1</span>
-        <h3 className="text-sm font-medium text-coder-text">Upload Resume</h3>
+        <h3 className="text-sm font-medium text-coder-text">Your Background</h3>
       </div>
 
-      <div
-        {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all
-          ${isDragActive ? 'border-coder-brown bg-coder-brown/5' : 'border-coder-border hover:border-coder-brown/50'}
-          ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-      >
-        <input {...getInputProps()} />
-        {loading ? (
-          <div className="flex flex-col items-center gap-3">
-            <Loader2 className="text-coder-brown animate-spin" size={32} />
-            <p className="text-sm text-coder-text-dim">
-              Parsing {fileName}...
-            </p>
-          </div>
-        ) : fileName && profile ? (
-          <div className="flex flex-col items-center gap-3">
-            <CheckCircle className="text-coder-success" size={32} />
-            <p className="text-sm text-coder-text-dim">
-              {fileName} parsed successfully
-            </p>
-            <p className="text-xs text-coder-text-dim">Drop a new file to re-upload</p>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-3">
-            <Upload className="text-coder-grey-dark" size={32} />
-            <div>
-              <p className="text-sm text-coder-text">
-                {isDragActive ? 'Drop your resume here' : 'Drag & drop your resume'}
-              </p>
-              <p className="text-xs text-coder-text-dim mt-1">PDF, TXT, DOC, DOCX supported</p>
+      <div className="flex gap-1 bg-coder-bg border border-coder-border rounded-lg p-1">
+        {tabs.map((tab) => (
+          <button
+            key={tab.mode}
+            onClick={() => setMode(tab.mode)}
+            className={`flex-1 flex items-center justify-center gap-1 px-3 py-1.5 rounded text-xs transition-colors
+              ${mode === tab.mode
+                ? 'bg-coder-brown/20 text-coder-brown border border-coder-brown/30'
+                : 'text-coder-text-dim hover:text-coder-text'}`}
+          >
+            {tab.icon}
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="bg-coder-card border border-coder-border rounded-lg overflow-hidden">
+        <div className="px-4 py-2 border-b border-coder-border bg-coder-surface">
+          <span className="text-xs text-coder-text-dim">
+            {mode === 'text' ? 'Self Description' : 'Resume Screenshot'}
+          </span>
+        </div>
+        <div className="p-4">
+          {mode === 'text' ? (
+            <textarea
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+              placeholder="Briefly describe your professional background, skills, experience, and education. For example: I'm a software engineer with 5 years of experience in full-stack web development. I've worked at startups and large companies, specializing in React, Node.js, and cloud infrastructure..."
+              className="w-full bg-coder-bg border border-coder-border rounded px-3 py-2 text-sm text-coder-text terminal-input focus:border-coder-brown focus:outline-none transition-colors min-h-[140px] resize-y"
+            />
+          ) : (
+            <div className="space-y-3">
+              <div
+                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all
+                  ${selectedFile ? 'border-coder-success/40 bg-coder-success/5' : 'border-coder-border hover:border-coder-brown/50'}`}
+                onClick={() => document.getElementById('resume-screenshot')?.click()}
+              >
+                <input
+                  id="resume-screenshot"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                {selectedFile ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <CheckCircle className="text-coder-success" size={24} />
+                    <p className="text-sm text-coder-text">{selectedFile.name}</p>
+                    <p className="text-xs text-coder-text-dim">Click to change</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-2">
+                    <Upload className="text-coder-grey-dark" size={24} />
+                    <p className="text-sm text-coder-text">Click to upload resume screenshot</p>
+                    <p className="text-xs text-coder-text-dim">PNG, JPG, WEBP supported</p>
+                  </div>
+                )}
+              </div>
+              {previewUrl && (
+                <img src={previewUrl} alt="Resume preview" className="w-full rounded border border-coder-border max-h-48 object-contain bg-white" />
+              )}
             </div>
-          </div>
-        )}
+          )}
+
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="mt-3 w-full bg-coder-brown/20 border border-coder-brown/40 text-coder-brown hover:bg-coder-brown/30 rounded px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <Loader2 size={14} className="animate-spin" />
+                <span>Analyzing...</span>
+              </>
+            ) : (
+              <span>Analyze Background</span>
+            )}
+          </button>
+        </div>
       </div>
 
       {error && (

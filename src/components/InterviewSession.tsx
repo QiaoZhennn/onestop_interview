@@ -26,6 +26,7 @@ export default function InterviewSession({ userProfile, roleProfile, sessionId, 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [recording, setRecording] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [overallScore, setOverallScore] = useState<number | null>(null);
   const [overallEvaluation, setOverallEvaluation] = useState('');
@@ -69,23 +70,32 @@ export default function InterviewSession({ userProfile, roleProfile, sessionId, 
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
         stream.getTracks().forEach(t => t.stop());
 
-        // Transcribe using OpenAI Whisper
-        const formData = new FormData();
-        formData.append('file', blob, 'recording.webm');
-        formData.append('model', 'whisper-1');
+        setTranscribing(true);
 
         try {
+          const formData = new FormData();
+          formData.append('file', blob, 'recording.webm');
+
           const res = await fetch('/api/transcribe', {
             method: 'POST',
             body: formData,
           });
+
+          if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.error || 'Transcription failed');
+          }
+
           const data = await res.json();
           if (data.text) {
             setAnswer(prev => prev ? prev + ' ' + data.text : data.text);
           }
         } catch (err) {
           console.error('Transcription failed:', err);
-          setAnswer(prev => prev + ' [Voice recording - transcription failed]');
+          const errMsg = err instanceof Error ? err.message : 'Transcription failed';
+          setAnswer(prev => prev + ` [Voice error: ${errMsg}]`);
+        } finally {
+          setTranscribing(false);
         }
       };
 
@@ -289,15 +299,15 @@ export default function InterviewSession({ userProfile, roleProfile, sessionId, 
         <div className="flex gap-2">
           <button
             onClick={recording ? stopRecording : startRecording}
-            disabled={submitting}
+            disabled={submitting || transcribing}
             className={`flex items-center gap-2 px-4 py-2 rounded text-sm transition-colors ${
               recording
                 ? 'bg-coder-error/20 border border-coder-error/40 text-coder-error hover:bg-coder-error/30'
                 : 'bg-coder-surface border border-coder-border text-coder-text-dim hover:text-coder-text hover:border-coder-brown/40'
             }`}
           >
-            {recording ? <MicOff size={14} /> : <Mic size={14} />}
-            {recording ? 'Stop Recording' : 'Voice Input'}
+            {transcribing ? <Loader2 size={14} className="animate-spin" /> : recording ? <MicOff size={14} /> : <Mic size={14} />}
+            {transcribing ? 'Transcribing...' : recording ? 'Stop Recording' : 'Voice Input'}
           </button>
 
           <button
