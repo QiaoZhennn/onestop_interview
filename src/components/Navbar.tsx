@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase-client';
 import { useRouter } from 'next/navigation';
-import { Menu, X, Terminal, LogOut } from 'lucide-react';
+import { Menu, X, Briefcase, LogOut } from 'lucide-react';
 
 export default function Navbar() {
   const [user, setUser] = useState<{ email?: string } | null>(null);
@@ -27,21 +27,20 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14">
           <a href="/dashboard" className="flex items-center gap-2 text-coder-brown hover:text-coder-brown-light transition-colors">
-            <Terminal size={20} />
+            <Briefcase size={20} />
             <span className="text-lg font-bold tracking-tight">
-              <span className="text-coder-grey">~/</span>onestop_interview
+              OneStop Interview
             </span>
           </a>
 
           {user && (
             <>
-              {/* Desktop nav */}
               <div className="hidden md:flex items-center gap-6">
                 <a href="/dashboard" className="text-sm text-coder-text-dim hover:text-coder-brown transition-colors">
-                  <span className="text-coder-grey-dark">$</span> dashboard
+                  Dashboard
                 </a>
                 <a href="/interview" className="text-sm text-coder-text-dim hover:text-coder-brown transition-colors">
-                  <span className="text-coder-grey-dark">$</span> interview
+                  Interview
                 </a>
                 <div className="h-4 w-px bg-coder-border" />
                 <span className="text-xs text-coder-text-dim">{user.email}</span>
@@ -54,7 +53,6 @@ export default function Navbar() {
                 </button>
               </div>
 
-              {/* Mobile hamburger */}
               <button
                 className="md:hidden text-coder-text-dim hover:text-coder-brown"
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -65,14 +63,13 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile menu */}
         {menuOpen && user && (
           <div className="md:hidden border-t border-coder-border py-3 space-y-2">
             <a href="/dashboard" className="block text-sm text-coder-text-dim hover:text-coder-brown py-1">
-              <span className="text-coder-grey-dark">$</span> dashboard
+              Dashboard
             </a>
             <a href="/interview" className="block text-sm text-coder-text-dim hover:text-coder-brown py-1">
-              <span className="text-coder-grey-dark">$</span> interview
+              Interview
             </a>
             <div className="border-t border-coder-border pt-2 mt-2">
               <span className="text-xs text-coder-text-dim block mb-2">{user.email}</span>
@@ -80,7 +77,7 @@ export default function Navbar() {
                 onClick={handleLogout}
                 className="text-sm text-coder-error hover:text-red-400 flex items-center gap-1"
               >
-                <LogOut size={14} /> logout
+                <LogOut size={14} /> Logout
               </button>
             </div>
           </div>

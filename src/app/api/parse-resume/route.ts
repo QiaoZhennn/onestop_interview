@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOpenAIClient, AI_MODEL } from '@/lib/openai';
+import pdf from 'pdf-parse';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,11 +14,8 @@ export async function POST(request: NextRequest) {
     let resumeText = '';
 
     if (file.type === 'application/pdf') {
-      // Read PDF as array buffer and extract text
       const buffer = Buffer.from(await file.arrayBuffer());
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const pdfParse = require('pdf-parse');
-      const pdfData = await pdfParse(buffer);
+      const pdfData = await pdf(buffer);
       resumeText = pdfData.text;
     } else {
       // For text files, read directly
@@ -65,4 +63,3 @@ Return ONLY valid JSON, no markdown formatting.`,
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { createClient } from '@/lib/supabase-client';
 import { useRouter } from 'next/navigation';
-import { Terminal } from 'lucide-react';
+import { Briefcase } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
@@ -22,10 +22,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-coder-bg flex items-center justify-center">
       <div className="text-center">
-        <Terminal className="text-coder-brown mx-auto mb-4 animate-pulse" size={40} />
-        <p className="text-coder-text-dim text-sm">
-          <span className="text-coder-brown">$</span> loading<span className="cursor-blink">_</span>
-        </p>
+        <Briefcase className="text-coder-brown mx-auto mb-4 animate-pulse" size={40} />
+        <p className="text-coder-text-dim text-sm">Loading...</p>
       </div>
     </div>
   );

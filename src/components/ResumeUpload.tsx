@@ -64,7 +64,7 @@ export default function ResumeUpload({ onProfileParsed, existingProfile }: Resum
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-coder-brown text-xs">01</span>
+        <span className="text-coder-brown text-xs font-bold">Step 1</span>
         <h3 className="text-sm font-medium text-coder-text">Upload Resume</h3>
       </div>
 
@@ -79,14 +79,14 @@ export default function ResumeUpload({ onProfileParsed, existingProfile }: Resum
           <div className="flex flex-col items-center gap-3">
             <Loader2 className="text-coder-brown animate-spin" size={32} />
             <p className="text-sm text-coder-text-dim">
-              <span className="text-coder-brown">$</span> parsing {fileName}<span className="cursor-blink">_</span>
+              Parsing {fileName}...
             </p>
           </div>
         ) : fileName && profile ? (
           <div className="flex flex-col items-center gap-3">
             <CheckCircle className="text-coder-success" size={32} />
             <p className="text-sm text-coder-text-dim">
-              <span className="text-coder-success">&#10003;</span> {fileName} parsed successfully
+              {fileName} parsed successfully
             </p>
             <p className="text-xs text-coder-text-dim">Drop a new file to re-upload</p>
           </div>
@@ -105,39 +105,39 @@ export default function ResumeUpload({ onProfileParsed, existingProfile }: Resum
 
       {error && (
         <div className="text-coder-error text-xs bg-coder-error/10 border border-coder-error/20 rounded px-3 py-2">
-          <span className="text-coder-error/60">error:</span> {error}
+          {error}
         </div>
       )}
 
       {profile && (
         <div className="bg-coder-card border border-coder-border rounded-lg overflow-hidden">
           <div className="px-4 py-2 border-b border-coder-border bg-coder-surface">
-            <span className="text-xs text-coder-text-dim">
-              <FileText size={12} className="inline mr-1" />
-              profile_summary.json
+            <span className="text-xs text-coder-text-dim flex items-center gap-1">
+              <FileText size={12} />
+              Profile Summary
             </span>
           </div>
           <div className="p-4 space-y-3 text-sm">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <span className="text-coder-text-dim text-xs">name:</span>
+                <span className="text-coder-text-dim text-xs">Name</span>
                 <p className="text-coder-brown">{profile.name}</p>
               </div>
               <div>
-                <span className="text-coder-text-dim text-xs">yoe:</span>
+                <span className="text-coder-text-dim text-xs">Experience</span>
                 <p className="text-coder-text">{profile.years_of_experience} years</p>
               </div>
               <div>
-                <span className="text-coder-text-dim text-xs">current_role:</span>
+                <span className="text-coder-text-dim text-xs">Current Role</span>
                 <p className="text-coder-text">{profile.current_role}</p>
               </div>
               <div>
-                <span className="text-coder-text-dim text-xs">industry:</span>
+                <span className="text-coder-text-dim text-xs">Industry</span>
                 <p className="text-coder-text">{profile.industry}</p>
               </div>
             </div>
             <div>
-              <span className="text-coder-text-dim text-xs">skills:</span>
+              <span className="text-coder-text-dim text-xs">Skills</span>
               <div className="flex flex-wrap gap-1 mt-1">
                 {profile.skills.map((skill, i) => (
                   <span key={i} className="text-xs bg-coder-brown/10 text-coder-brown border border-coder-brown/20 rounded px-2 py-0.5">
@@ -147,11 +147,11 @@ export default function ResumeUpload({ onProfileParsed, existingProfile }: Resum
               </div>
             </div>
             <div>
-              <span className="text-coder-text-dim text-xs">education:</span>
+              <span className="text-coder-text-dim text-xs">Education</span>
               <p className="text-coder-text text-xs">{profile.education}</p>
             </div>
             <div>
-              <span className="text-coder-text-dim text-xs">summary:</span>
+              <span className="text-coder-text-dim text-xs">Summary</span>
               <p className="text-coder-text text-xs leading-relaxed">{profile.summary}</p>
             </div>
           </div>

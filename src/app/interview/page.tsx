@@ -98,7 +98,6 @@ function InterviewContent() {
   }, []);
 
   const handleComplete = () => {
-    // Refresh to show results
     router.push(`/interview?session=${sessionId}&review=true`);
     window.location.reload();
   };
@@ -116,19 +115,19 @@ function InterviewContent() {
       <div className="max-w-3xl mx-auto px-4 py-8">
         <a href="/dashboard" className="inline-flex items-center gap-1 text-sm text-coder-text-dim hover:text-coder-brown transition-colors mb-6">
           <ArrowLeft size={14} />
-          <span>cd ../dashboard</span>
+          <span>Back to Dashboard</span>
         </a>
 
         <h1 className="text-xl font-bold text-coder-text mb-6">
-          <span className="text-coder-grey-dark">$</span> interview_results
+          Interview Results
         </h1>
 
         {/* Overall Score */}
         <div className="bg-coder-card border border-coder-border rounded-lg overflow-hidden mb-6">
           <div className="px-4 py-2 border-b border-coder-border bg-coder-surface">
-            <span className="text-xs text-coder-text-dim">
-              <Award size={12} className="inline mr-1" />
-              evaluation_result.json
+            <span className="text-xs text-coder-text-dim flex items-center gap-1">
+              <Award size={12} />
+              Evaluation Result
             </span>
           </div>
           <div className="p-6 text-center">
@@ -154,12 +153,12 @@ function InterviewContent() {
 
         {/* Q&A Breakdown */}
         <div className="space-y-3">
-          <h4 className="text-xs text-coder-text-dim">{"// Question-by-question breakdown"}</h4>
+          <h4 className="text-xs text-coder-text-dim font-medium">Question-by-Question Breakdown</h4>
           {reviewData.qas.map((qa, i) => (
             <div key={i} className="bg-coder-card border border-coder-border rounded-lg p-4 space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <p className="text-sm text-coder-brown flex-1">
-                  <span className="text-coder-grey-dark">Q{qa.question_number}:</span> {qa.question_text}
+                  <span className="text-coder-grey-dark font-medium">Q{qa.question_number}:</span> {qa.question_text}
                 </p>
                 {qa.score !== null && (
                   <span className={`text-xs font-bold px-2 py-0.5 rounded shrink-0 ${
@@ -172,7 +171,7 @@ function InterviewContent() {
               </div>
               {qa.answer_text && (
                 <p className="text-xs text-coder-text">
-                  <span className="text-coder-grey-dark">A:</span> {qa.answer_text}
+                  <span className="text-coder-grey-dark font-medium">A:</span> {qa.answer_text}
                 </p>
               )}
               {qa.evaluation && (
@@ -190,7 +189,7 @@ function InterviewContent() {
       <div className="max-w-3xl mx-auto px-4 py-8 text-center">
         <p className="text-coder-text-dim">Missing data. Please go back to dashboard.</p>
         <a href="/dashboard" className="text-coder-brown hover:text-coder-brown-light mt-4 inline-block">
-          cd ../dashboard
+          Back to Dashboard
         </a>
       </div>
     );
@@ -200,14 +199,14 @@ function InterviewContent() {
     <div className="max-w-3xl mx-auto px-4 py-8">
       <a href="/dashboard" className="inline-flex items-center gap-1 text-sm text-coder-text-dim hover:text-coder-brown transition-colors mb-6">
         <ArrowLeft size={14} />
-        <span>cd ../dashboard</span>
+        <span>Back to Dashboard</span>
       </a>
 
       <h1 className="text-xl font-bold text-coder-text mb-2">
-        <span className="text-coder-grey-dark">$</span> interview_session
+        Interview Session
       </h1>
       <p className="text-sm text-coder-text-dim mb-6">
-        {`// ${roleProfile.title} at ${roleProfile.company}`}
+        {roleProfile.title} at {roleProfile.company}
       </p>
 
       <InterviewSession

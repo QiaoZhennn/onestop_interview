@@ -67,19 +67,18 @@ export default function RoleInput({ onRoleParsed, existingRole }: RoleInputProps
   };
 
   const tabs: { mode: InputMode; label: string; icon: React.ReactNode }[] = [
-    { mode: 'text', label: 'text', icon: <Type size={14} /> },
-    { mode: 'url', label: 'url', icon: <Link size={14} /> },
-    { mode: 'screenshot', label: 'image', icon: <FileText size={14} /> },
+    { mode: 'text', label: 'Text', icon: <Type size={14} /> },
+    { mode: 'url', label: 'URL', icon: <Link size={14} /> },
+    { mode: 'screenshot', label: 'Image', icon: <FileText size={14} /> },
   ];
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-coder-brown text-xs">02</span>
+        <span className="text-coder-brown text-xs font-bold">Step 2</span>
         <h3 className="text-sm font-medium text-coder-text">Define Target Role</h3>
       </div>
 
-      {/* Mode tabs */}
       <div className="flex gap-1 bg-coder-bg border border-coder-border rounded-lg p-1">
         {tabs.map((tab) => (
           <button
@@ -96,11 +95,10 @@ export default function RoleInput({ onRoleParsed, existingRole }: RoleInputProps
         ))}
       </div>
 
-      {/* Input area */}
       <div className="bg-coder-card border border-coder-border rounded-lg overflow-hidden">
         <div className="px-4 py-2 border-b border-coder-border bg-coder-surface">
           <span className="text-xs text-coder-text-dim">
-            role_input.{mode === 'screenshot' ? 'png' : mode === 'url' ? 'link' : 'txt'}
+            {mode === 'text' ? 'Job Description' : mode === 'url' ? 'Job URL' : 'Screenshot'}
           </span>
         </div>
         <div className="p-4">
@@ -138,10 +136,10 @@ export default function RoleInput({ onRoleParsed, existingRole }: RoleInputProps
             {loading ? (
               <>
                 <Loader2 size={14} className="animate-spin" />
-                <span>analyzing<span className="cursor-blink">_</span></span>
+                <span>Analyzing...</span>
               </>
             ) : (
-              <span>$ ./analyze_role</span>
+              <span>Analyze Role</span>
             )}
           </button>
         </div>
@@ -149,50 +147,50 @@ export default function RoleInput({ onRoleParsed, existingRole }: RoleInputProps
 
       {error && (
         <div className="text-coder-error text-xs bg-coder-error/10 border border-coder-error/20 rounded px-3 py-2">
-          <span className="text-coder-error/60">error:</span> {error}
+          {error}
         </div>
       )}
 
       {role && (
         <div className="bg-coder-card border border-coder-border rounded-lg overflow-hidden">
           <div className="px-4 py-2 border-b border-coder-border bg-coder-surface">
-            <span className="text-xs text-coder-text-dim">
-              <Briefcase size={12} className="inline mr-1" />
-              role_summary.json
+            <span className="text-xs text-coder-text-dim flex items-center gap-1">
+              <Briefcase size={12} />
+              Role Summary
             </span>
           </div>
           <div className="p-4 space-y-3 text-sm">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <span className="text-coder-text-dim text-xs">title:</span>
+                <span className="text-coder-text-dim text-xs">Title</span>
                 <p className="text-coder-brown">{role.title}</p>
               </div>
               <div>
-                <span className="text-coder-text-dim text-xs">company:</span>
+                <span className="text-coder-text-dim text-xs">Company</span>
                 <p className="text-coder-text">{role.company}</p>
               </div>
               <div>
-                <span className="text-coder-text-dim text-xs">level:</span>
+                <span className="text-coder-text-dim text-xs">Level</span>
                 <p className="text-coder-text">{role.level}</p>
               </div>
               <div>
-                <span className="text-coder-text-dim text-xs">department:</span>
+                <span className="text-coder-text-dim text-xs">Department</span>
                 <p className="text-coder-text">{role.department}</p>
               </div>
             </div>
             <div>
-              <span className="text-coder-text-dim text-xs">key_responsibilities:</span>
+              <span className="text-coder-text-dim text-xs">Key Responsibilities</span>
               <ul className="mt-1 space-y-1">
                 {role.key_responsibilities.map((r, i) => (
                   <li key={i} className="text-xs text-coder-text flex gap-2">
-                    <span className="text-coder-grey-dark shrink-0">-</span>
+                    <span className="text-coder-grey-dark shrink-0">&bull;</span>
                     {r}
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <span className="text-coder-text-dim text-xs">required_skills:</span>
+              <span className="text-coder-text-dim text-xs">Required Skills</span>
               <div className="flex flex-wrap gap-1 mt-1">
                 {role.required_skills.map((skill, i) => (
                   <span key={i} className="text-xs bg-coder-brown/10 text-coder-brown border border-coder-brown/20 rounded px-2 py-0.5">
@@ -202,7 +200,7 @@ export default function RoleInput({ onRoleParsed, existingRole }: RoleInputProps
               </div>
             </div>
             <div>
-              <span className="text-coder-text-dim text-xs">summary:</span>
+              <span className="text-coder-text-dim text-xs">Summary</span>
               <p className="text-coder-text text-xs leading-relaxed">{role.summary}</p>
             </div>
           </div>
